@@ -1,0 +1,61 @@
+<div id="subscription-block" style="padding:15px; border:1px solid #ddd; border-radius:8px; margin-top:20px;">
+  <h3>Subscribe to {{ product.title }}</h3>
+
+  <label for="frequency">Delivery Frequency:</label>
+  <select id="frequency" style="margin-bottom:10px; padding:5px;">
+    <option value="once">Once / Week</option>
+    <option value="twice">Twice / Week</option>
+    <option value="thrice">Thrice / Week</option>
+  </select>
+
+  {% if customer %}
+    <input type="hidden" id="customer_name" value="{{ customer.first_name }} {{ customer.last_name }}">
+    <input type="hidden" id="customer_email" value="{{ customer.email }}">
+    <input type="hidden" id="customer_phone" value="{{ customer.phone }}">
+  {% else %}
+    <input type="text" id="customer_name" placeholder="Name">
+    <input type="email" id="customer_email" placeholder="Email">
+    <input type="text" id="customer_phone" placeholder="Phone (optional)">
+  {% endif %}
+
+  <button id="subscribe-btn" style="margin-top:10px; padding:10px 20px; background:#5e8046; color:white; border:none; border-radius:5px; cursor:pointer;">
+    Subscribe
+  </button>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+document.getElementById("subscribe-btn").onclick = async function() {
+  const name = document.getElementById("customer_name")?.value || prompt("Enter Name");
+  const email = document.getElementById("customer_email")?.value || prompt("Enter Email");
+  const contact = document.getElementById("customer_phone")?.value || undefined;
+  const frequency = document.getElementById("frequency").value;
+  const product = "{{ product.title }}";
+
+  const res = await fetch("https://unenamoured-nonmetalliferous-ashlie.ngrok-free.dev/create-subscription", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, contact, frequency, product })
+  });
+
+  const data = await res.json();
+  if (data.error) return alert("Subscription failed: " + data.error);
+
+  const options = {
+    key: "test",
+    subscription_id: data.subscription.id,
+    name: "Healthy Food Store",
+    description: product + " Subscription",
+    prefill: { name, email, contact },
+    notes: { frequency },
+    theme: { color: "#5e8046" },
+    handler: function(response) {
+      alert("Subscription successful! Razorpay Payment ID: " + response.razorpay_payment_id);
+    },
+    modal: { ondismiss: function(){ alert("Payment closed"); } }
+  };
+
+  const rzp = new Razorpay(options);
+  rzp.open();
+};
+</script>
