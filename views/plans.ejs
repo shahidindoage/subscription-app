@@ -1,0 +1,27 @@
+<h2>Razorpay Plans</h2>
+<table border="1" cellpadding="10" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Product</th>
+      <th>Amount (₹)</th>
+      <th>Period</th>
+      <th>Interval</th>
+      <th>Status</th>
+      <th>Created At</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% plans.forEach(plan => { %>
+      <tr>
+        <td><%= plan.name %></td>
+        <td><%= plan.product %></td>
+        <td><%= plan.amount %></td>
+        <td><%= plan.period %></td>
+        <td><%= plan.interval %></td>
+        <td><%= plan.status %></td>
+        <td><%= plan.created_at %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>

@@ -12,19 +12,24 @@ model Customer {
   name       String
   email      String   @unique
   contact    String?
-  razorpayId String? 
+  razorpayId String?      // <--- this must exist
   createdAt  DateTime @default(now())
 
   subscriptions Subscription[]
 }
 
 model Subscription {
-  id                   String   @id @default(cuid())
-  razorpaySubscription String   @unique
-  product              String
-  frequency             String
-  status               String
-  planId               String
+  id                String   @id @default(cuid())
+  razorpayOrderId    String?  // optional if using normal payment
+  product           String
+  frequency         String
+  quantity          Int
+  period            Int
+  deliveryDays      String?
+  totalAmount       Float
+  deliveryFee       Float
+  status            String
+  isOneTimePurchase Boolean  @default(false)
 
   customerId String
   customer   Customer @relation(fields: [customerId], references: [id])
@@ -32,3 +37,4 @@ model Subscription {
   createdAt   DateTime @default(now())
   cancelledAt DateTime?
 }
+
